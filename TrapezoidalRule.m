@@ -3,18 +3,35 @@ classdef TrapezoidalRule
     % Constructor
     methods
         function this = TrapezoidalRule ()
+            p = 2; % level of accuracy
             a = 1; % interval start
             b = 3; % interval end
-            N = 32; % spacing
+            % N = 32; % spacing   RES: 32 -> 1.0989
+            N = [10, 20, 40, 80];
             stringFunc = '1/x';
 
-            this.Solve(a, b, N, inline(stringFunc));
+            this.Solve(p, a, b, N, inline(stringFunc));
         end
     end
 
     % Public methods
     methods
-        function Solve (this, a, b, N, f)
+        function Solve (this, p, a, b, N, f)
+            
+            for i = 1 : length(N)
+                S_N = this.GetIntegral(a, b, N(i), f);
+                S_N2 = this.GetIntegral(a, b, N(i) / 2, f);
+                runge = abs(S_N - S_N2) / (2^p - 1);
+
+                this.PrintStepResults(N(i), S_N, runge);                    
+            end
+
+        end
+    end
+
+    % Private methods
+    methods (Access = private)
+        function res = GetIntegral (this, a, b, N, f)
             step = (b - a) / N;
             range = a : step : b;
 
@@ -23,20 +40,42 @@ classdef TrapezoidalRule
                 h1 = f(range(i));
                 h2 = f(range(i + 1));
                 hDiff = abs(h1 - h2);
+
                 % Calculate the areas
                 triangle = step * hDiff / 2;
                 quad = min(h1, h2) * step;
                 total = total + triangle + quad;
             end
 
-            disp('-----------------------------');
-            disp(['The result: ' num2str(total)]);
+            res = total;
         end
-    end
 
-    % Private methods
-    methods (Access = private)
 
+        function res = PadString (this, message, width)
+			differ = width - length(message);
+			for i = 1 : differ
+				message = [message, ' '];
+			end
+			res = message;
+		end
+
+		function PrintStepResults (this, N, S_N, runge)
+			message = [];
+
+			mock = ['N: ' num2str(N)];
+			note = this.PadString(mock, 10);
+			message = [message, note];
+
+            mock = ['S_N: ' num2str(S_N)];
+			note = this.PadString(mock, 20);
+			message = [message, note];
+
+			mock = ['3_N: ' num2str(runge)];
+			note = this.PadString(mock, 20);
+			message = [message, note];
+
+			disp(message);
+		end
     end
 
 end
