@@ -6,7 +6,6 @@ classdef TrapezoidalRule
             p = 2; % level of accuracy
             a = 1; % interval start
             b = 3; % interval end
-            % N = 32; % spacing   RES: 32 -> 1.0989
             N = [10, 20, 40, 80];
             f = @(x) 1./x;
 
@@ -27,7 +26,6 @@ classdef TrapezoidalRule
 
                 this.PrintStepResults(N(i), S_N, error, runge);                    
             end
-
         end
     end
 
