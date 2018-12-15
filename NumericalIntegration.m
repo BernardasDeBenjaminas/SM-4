@@ -43,7 +43,7 @@ classdef NumericalIntegration
             disp('--------------------------------------');
             for i = 1 : length(N)
                 S_N = this.GetGaussian(a, b, N(i), f);
-                S_N2 = this.GetTrapezoid(a, b, N(i) / 2, f);
+                S_N2 = this.GetGaussian(a, b, N(i) / 2, f);
                 runge = abs(S_N - S_N2) / (2^p - 1);
                 error = abs(I - S_N);
 
