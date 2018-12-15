@@ -19,8 +19,8 @@ classdef TrapezoidalRule
             I = integral(f, a, b);
             
             for i = 1 : length(N)
-                S_N = this.GetIntegral(a, b, N(i), f);
-                S_N2 = this.GetIntegral(a, b, N(i) / 2, f);
+                S_N = this.GetTrapezoidArea(a, b, N(i), f);
+                S_N2 = this.GetTrapezoidArea(a, b, N(i) / 2, f);
                 runge = abs(S_N - S_N2) / (2^p - 1);
                 error = abs(I - S_N);
 
@@ -31,7 +31,7 @@ classdef TrapezoidalRule
 
     % Private methods
     methods (Access = private)
-        function res = GetIntegral (this, a, b, N, f)
+        function res = GetTrapezoidArea (this, a, b, N, f)
             step = (b - a) / N;
             range = a : step : b;
 
@@ -39,12 +39,7 @@ classdef TrapezoidalRule
             for i = 1 : length(range) - 1
                 h1 = f(range(i));
                 h2 = f(range(i + 1));
-                hDiff = abs(h1 - h2);
-
-                % Calculate the areas
-                triangle = step * hDiff / 2;
-                quad = min(h1, h2) * step;
-                total = total + triangle + quad;
+                total = total + (h1 + h2) * 0.5 * step;
             end
 
             res = total;
