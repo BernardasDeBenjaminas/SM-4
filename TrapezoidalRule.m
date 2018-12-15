@@ -8,22 +8,24 @@ classdef TrapezoidalRule
             b = 3; % interval end
             % N = 32; % spacing   RES: 32 -> 1.0989
             N = [10, 20, 40, 80];
-            stringFunc = '1/x';
+            f = @(x) 1./x;
 
-            this.Solve(p, a, b, N, inline(stringFunc));
+            this.Solve(p, a, b, N, f);
         end
     end
 
     % Public methods
     methods
         function Solve (this, p, a, b, N, f)
+            I = integral(f, a, b);
             
             for i = 1 : length(N)
                 S_N = this.GetIntegral(a, b, N(i), f);
                 S_N2 = this.GetIntegral(a, b, N(i) / 2, f);
                 runge = abs(S_N - S_N2) / (2^p - 1);
+                error = abs(I - S_N);
 
-                this.PrintStepResults(N(i), S_N, runge);                    
+                this.PrintStepResults(N(i), S_N, error, runge);                    
             end
 
         end
@@ -59,7 +61,7 @@ classdef TrapezoidalRule
 			res = message;
 		end
 
-		function PrintStepResults (this, N, S_N, runge)
+		function PrintStepResults (this, N, S_N, error, runge)
 			message = [];
 
 			mock = ['N: ' num2str(N)];
@@ -67,10 +69,14 @@ classdef TrapezoidalRule
 			message = [message, note];
 
             mock = ['S_N: ' num2str(S_N)];
+			note = this.PadString(mock, 15);
+			message = [message, note];
+            
+            mock = ['e_N: ' num2str(error)];
 			note = this.PadString(mock, 20);
 			message = [message, note];
 
-			mock = ['3_N: ' num2str(runge)];
+			mock = ['8_N: ' num2str(runge)];
 			note = this.PadString(mock, 20);
 			message = [message, note];
 
